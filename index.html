@@ -409,15 +409,18 @@ function rendre() {
   document.getElementById("rebrief").hidden = !S.cle;
 
   document.getElementById("nav").innerHTML =
-    [["jour","Aujourd'hui",jour.length],["semaine","Semaine",sem.length],
+    [["jour","Agenda",jour.length + sem.length],
      ["dossiers","Dossiers",grp.length],["reglages","Réglages",0]]
     .map(x => '<button data-vue="' + x[0] + '" class="' + (vue === x[0] ? "on" : "") + '">' + x[1] +
       (x[2] ? ' <span class="n">' + x[2] + '</span>' : '') + '</button>').join("");
 
   const m = document.getElementById("main");
   if (vue === "reglages") m.innerHTML = vueReglages();
-  else if (vue === "jour") m.innerHTML = jour.length ? jour.map(e => ligne(e,true)).join("") : '<div class="vide">Aucune échéance aujourd\'hui.</div>';
-  else if (vue === "semaine") m.innerHTML = sem.length ? sem.map(e => ligne(e,true)).join("") : '<div class="vide">Rien de daté sur sept jours.</div>';
+  else if (vue === "jour" || vue === "semaine") m.innerHTML =
+    (!jour.length && !sem.length)
+      ? '<div class="vide">Rien de daté sur sept jours.</div>'
+      : (jour.length ? '<div class="entete">AUJOURD\'HUI <span class="n">' + jour.length + '</span></div>' + jour.map(e => ligne(e,true)).join("") : '')
+      + (sem.length ? '<div class="entete">CETTE SEMAINE <span class="n">' + sem.length + '</span></div>' + sem.map(e => ligne(e,true)).join("") : '');
   else m.innerHTML = grp.length ? grp.map(g =>
       '<div class="entete">' + g.nom.toUpperCase() + ' <span class="n">' + g.items.length + '</span></div>' +
       (g.ss ? g.ss.map(s => '<div class="sentete">└ ' + s.toUpperCase() + '</div>' +
@@ -502,7 +505,7 @@ function vueReglages() {
     '<textarea class="saisie-champ" rows="12" data-reglage="contexte" style="font-family:var(--mono);font-size:11.5px">' + esc(S.contexte) + '</textarea></label>' +
   '<div class="note" style="border-top:1px solid var(--ligne);padding-top:16px">' +
     S.entrees.length + ' entrée(s) au registre · ' + S.entrees.filter(e => e.done).length + ' close(s)<br>' +
-    'Dernière cote : ' + cote(S.compteur) + '<br>version 4 \u00b7 rose</div>' +
+    'Dernière cote : ' + cote(S.compteur) + '<br>version 5 \u00b7 agenda</div>' +
   '<div style="margin-top:16px;display:flex;gap:8px">' +
     '<button class="valider" data-export="1" style="background:none;border:1px solid var(--ligne);color:var(--texteF)">EXPORTER (JSON)</button>' +
   '</div></div>';
