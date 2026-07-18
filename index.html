@@ -69,11 +69,12 @@ nav button .n{color:var(--marge)} nav button.on .n{color:var(--tampon)}
 #capture{position:fixed;left:0;right:0;bottom:0;background:var(--fond);
   border-top:1px solid var(--ligne);box-shadow:0 -14px 28px rgba(15,19,25,.9);
   padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
-#chips{display:flex;gap:8px;padding:0 16px 10px;overflow-x:auto}
-#chips button{flex:0 0 auto;padding:8px 12px;border-radius:5px;border:1px solid var(--ligne);
+#chips,#pre{display:flex;gap:8px;padding:0 16px 10px;overflow-x:auto}
+#chips button,#pre button{flex:0 0 auto;padding:8px 12px;border-radius:5px;border:1px solid var(--ligne);
   background:var(--surface2);color:var(--texteF);font-family:var(--mono);font-size:12px;white-space:nowrap}
 #chips button.sous{border-color:var(--tampon);background:var(--tamponF);color:var(--texte)}
 #chips button.ia{border-color:var(--tampon);color:var(--tampon);background:none}
+#pre button.on{border-color:var(--tampon);background:var(--tamponF);color:var(--texte)}
 .zone{padding:0 16px}
 #saisie{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--ligne);
   border-radius:6px;font-size:16px;line-height:1.4;resize:none;max-height:120px}
@@ -122,6 +123,7 @@ textarea.saisie-champ{resize:vertical;line-height:1.5;font-size:14px;color:var(-
 <nav id="nav"></nav>
 <main id="main"></main>
 <div id="capture">
+  <div id="pre" class="barre" hidden></div>
   <div id="chips" class="barre" hidden></div>
   <div class="zone">
     <textarea id="saisie" rows="1" placeholder="Note tout. Touche un dossier pour classer."></textarea>
@@ -165,11 +167,17 @@ N'invente ni durée ni échéance. La plupart des choses de la vie courante n'en
 const CLE = "marge.registre.v1";
 let S = { entrees: [], compteur: 0, cle: "", modele: "claude-sonnet-5", contexte: CONTEXTE_DEF };
 let vue = "jour", saisie = "", attenteSous = null, ouvert = null, brief = null, occupe = false;
+let pen = { date: null, haute: false };
 
 function charger() {
   try {
     const b = localStorage.getItem(CLE);
     if (b) S = Object.assign(S, JSON.parse(b));
+    let rep = false;
+    S.entrees.forEach(e => {
+      if (SOUS.Maison.includes(e.dossier)) { e.sous = e.dossier; e.dossier = "Maison"; rep = true; }
+    });
+    if (rep) sauver();
     etat(true);
   } catch (e) { etat(false, e.message); }
 }
@@ -300,8 +308,11 @@ function classer(dossier, sous) {
   const r = lireDate(sansUrl.replace(/!/g,"").trim());
   let titre = r.reste || (lien ? "Lien — " + hote(lien) : brut);
   titre = titre.charAt(0).toUpperCase() + titre.slice(1);
+  const ech = pen.date || r.date;
   ajouter({ titre: titre.slice(0,90), dossier, sous: sous || null,
-            echeance: r.date, priorite: haute ? "haute" : "moyenne", lien, brut });
+            echeance: ech, priorite: (haute || pen.haute) ? "haute" : "moyenne", lien, brut });
+  aide(cote(S.compteur) + " \u2192 " + dossier + (sous ? " / " + sous : "") + (ech ? " \u00b7 " + libelle(ech) : ""));
+  pen = { date: null, haute: false };
   saisie = ""; attenteSous = null;
   document.getElementById("saisie").value = "";
   document.getElementById("saisie").style.height = "auto";
@@ -320,12 +331,14 @@ async function trierIA() {
       const d = DOSSIERS.includes(it.dossier) ? it.dossier : "Veille";
       ajouter({ titre: (it.titre || brut).slice(0,90), dossier: d,
                 sous: SOUS[d] ? (it.sous || null) : null,
-                echeance: it.echeance || null, priorite: it.priorite || "moyenne", lien, brut });
+                echeance: pen.date || it.echeance || null,
+                priorite: pen.haute ? "haute" : (it.priorite || "moyenne"), lien, brut });
     });
+    aide(items.length + " entr\u00e9e(s) tri\u00e9e(s) \u00b7 derni\u00e8re : " + cote(S.compteur));
+    pen = { date: null, haute: false };
     saisie = ""; attenteSous = null;
     document.getElementById("saisie").value = "";
     document.getElementById("saisie").style.height = "auto";
-    aide("");
   } catch (e) {
     // Jamais de saisie perdue.
     ajouter({ titre: (lien ? "Lien — " + hote(lien) : brut).slice(0,90),
@@ -413,6 +426,14 @@ function rendre() {
 
   const ch = document.getElementById("chips");
   ch.hidden = !saisie.trim() || vue === "reglages";
+  const pr = document.getElementById("pre");
+  pr.hidden = ch.hidden || !!attenteSous;
+  if (!pr.hidden) {
+    pr.innerHTML = [["Auj.",0],["Demain",1],["+3j",3],["+7j",7]].map(x => {
+      const v = plus(x[1]);
+      return '<button data-pdate="' + x[1] + '" class="' + (pen.date === v ? "on" : "") + '">' + x[0] + '</button>';
+    }).join("") + '<button data-phaute="1" class="' + (pen.haute ? "on" : "") + '">! haute</button>';
+  }
   if (!ch.hidden) {
     const liste = attenteSous ? SOUS[attenteSous] : DOSSIERS;
     ch.innerHTML =
@@ -487,13 +508,15 @@ sz.addEventListener("input", () => {
 });
 
 $.addEventListener("click", ev => {
-  const t = ev.target.closest("[data-vue],[data-classe],[data-retour],[data-ia],[data-ouvrir],[data-fait],[data-suppr],[data-fermer],[data-stop],[data-set-dossier],[data-set-sous],[data-set-prio],[data-date],[data-test],[data-export]");
+  const t = ev.target.closest("[data-pdate],[data-phaute],[data-vue],[data-classe],[data-retour],[data-ia],[data-ouvrir],[data-fait],[data-suppr],[data-fermer],[data-stop],[data-set-dossier],[data-set-sous],[data-set-prio],[data-date],[data-test],[data-export]");
   if (!t) return;
   const d = t.dataset;
 
   if (d.stop !== undefined) { ev.stopPropagation(); return; }
   if (d.vue) { vue = d.vue; rendre(); }
-  else if (d.classe) classer(d.classe, attenteSous ? d.classe : null);
+  else if (d.classe) classer(attenteSous || d.classe, attenteSous ? d.classe : null);
+  else if (d.pdate !== undefined) { const v = plus(+d.pdate); pen.date = (pen.date === v ? null : v); rendre(); }
+  else if (d.phaute !== undefined) { pen.haute = !pen.haute; rendre(); }
   else if (d.retour !== undefined) { attenteSous = null; rendre(); }
   else if (d.ia !== undefined) trierIA();
   else if (d.ouvrir) { ouvert = d.ouvrir; rendre(); }
