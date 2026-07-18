@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La Marge">
+<meta name="theme-color" content="#0F1319">
+<title>La Marge</title>
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAACIUlEQVR4nO3cMUpDQRRAUSP2KVJlDUawEtyRC3AZLsAdCakEzX5sLXJB9CczknO63wxTXB78gZnVerO9gmOuR2+AeYmDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIN0su9zL09v3z+fXx2XX55xMDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDpI4SOIgiYMkDtLCN97+4vC5H72F/+p293CKZU0OkjhI4iCJgyQOkjhI4iBNdM5xop91fs3kIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIM104+3ufvQWxjh8vI/ewnEmB0kcJHGQxEESB0kcJHGQJjrnmPZ3/2KZHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHCRxkMRBEgdJHKSJbrxd7Ms+P3fmS4EmB0kcJHGQxEESB0kcJHGQJjrn8LLPbEwOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhI4iCJgyQOkjhIq/VmO3oPTMrkIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEjiIImDJA6SOEhfiVgTaKvsCAgAAAAASUVORK5CYII=">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap');
+:root{
+  --fond:#0F1319; --surface:#171B22; --surface2:#1E242D; --ligne:#2A313B;
+  --ligneF:#20262E; --texte:#E4E7E3; --texteF:#9AA2AD; --marge:#6B7480;
+  --tampon:#9B7BE0; --tamponF:#3A2F55; --alerte:#E8A33D;
+  --sans:'IBM Plex Sans',system-ui,-apple-system,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--fond);color:var(--texte);font-family:var(--sans);
+  padding-bottom:calc(150px + env(safe-area-inset-bottom));
+  -webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+button,input,textarea{font:inherit;color:inherit;background:none;border:none;outline:none}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--tampon);outline-offset:1px}
+::placeholder{color:var(--marge)}
+.barre::-webkit-scrollbar{display:none}
+.barre{scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.mono{font-family:var(--mono)}
+
+header{padding:calc(22px + env(safe-area-inset-top)) 20px 16px;border-bottom:1px solid var(--ligne)}
+.titre-bar{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.logo{font-family:var(--mono);font-size:10px;letter-spacing:.1em;color:var(--tampon)}
+.etat{font-family:var(--mono);font-size:9px;color:var(--marge);text-align:right}
+.etat.ko{color:var(--alerte)}
+.brief{margin-top:12px;border-left:2px solid var(--tampon);padding-left:14px}
+.brief .j{font-family:var(--mono);font-size:10px;color:var(--marge)}
+.brief p{margin-top:4px;font-size:17px;line-height:1.4}
+.brief .derive{margin-top:8px;font-family:var(--mono);font-size:11.5px;line-height:1.5;color:var(--alerte)}
+.brief .act{font-family:var(--mono);font-size:10px;color:var(--marge)}
+
+nav{display:flex;gap:20px;padding:0 20px;border-bottom:1px solid var(--ligne);overflow-x:auto}
+nav button{padding:12px 0;font-family:var(--mono);font-size:11px;color:var(--marge);
+  border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+nav button.on{color:var(--texte);border-bottom-color:var(--tampon)}
+nav button .n{color:var(--marge)} nav button.on .n{color:var(--tampon)}
+
+.ligne{display:flex;align-items:stretch;border-bottom:1px solid var(--ligneF)}
+.rail{width:62px;flex:0 0 62px;padding-right:12px;display:flex;flex-direction:column;
+  justify-content:center;font-family:var(--mono);font-size:10.5px;color:var(--marge)}
+.rail .d{margin-top:2px} .rail .d.retard{color:var(--alerte)}
+.corps{flex:1;min-width:0;text-align:left;padding:12px 8px 12px 12px;border-left:2px solid transparent}
+.corps.haute{border-left-color:var(--tampon)}
+.corps.moyenne{border-left-color:var(--tamponF)}
+.corps .t{font-size:15px;line-height:1.35}
+.corps .m{margin-top:4px;font-family:var(--mono);font-size:10.5px;color:var(--marge);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.case{flex:0 0 auto;padding:0 16px;display:flex;align-items:center}
+.case i{display:block;width:17px;height:17px;border-radius:3px;border:1.5px solid var(--ligne)}
+.entete{padding:8px 20px;font-family:var(--mono);font-size:10px;letter-spacing:.1em;
+  color:var(--tampon);background:var(--surface);border-bottom:1px solid var(--ligneF)}
+.entete .n{color:var(--marge)}
+.sentete{padding:6px 0 6px 62px;font-family:var(--mono);font-size:10px;color:var(--texteF);
+  background:var(--surface2);border-bottom:1px solid var(--ligneF)}
+.vide{padding:56px 20px;text-align:center;font-family:var(--mono);font-size:11.5px;color:var(--marge)}
+
+#capture{position:fixed;left:0;right:0;bottom:0;background:var(--fond);
+  border-top:1px solid var(--ligne);box-shadow:0 -14px 28px rgba(15,19,25,.9);
+  padding:10px 0 calc(14px + env(safe-area-inset-bottom))}
+#chips{display:flex;gap:8px;padding:0 16px 10px;overflow-x:auto}
+#chips button{flex:0 0 auto;padding:8px 12px;border-radius:5px;border:1px solid var(--ligne);
+  background:var(--surface2);color:var(--texteF);font-family:var(--mono);font-size:12px;white-space:nowrap}
+#chips button.sous{border-color:var(--tampon);background:var(--tamponF);color:var(--texte)}
+#chips button.ia{border-color:var(--tampon);color:var(--tampon);background:none}
+.zone{padding:0 16px}
+#saisie{width:100%;padding:10px 12px;background:var(--surface2);border:1px solid var(--ligne);
+  border-radius:6px;font-size:16px;line-height:1.4;resize:none;max-height:120px}
+.aide{margin-top:6px;font-family:var(--mono);font-size:9.5px;color:var(--marge)}
+.aide.ko{color:var(--alerte)}
+
+.voile{position:fixed;inset:0;background:rgba(6,9,13,.72);z-index:50;display:flex;align-items:flex-end}
+.feuille{width:100%;max-height:88vh;overflow-y:auto;background:var(--surface);
+  border-top:1px solid var(--ligne);border-radius:12px 12px 0 0;
+  padding:16px 20px calc(24px + env(safe-area-inset-bottom))}
+.fh{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;
+  font-family:var(--mono);font-size:11px}
+.fh .c{color:var(--tampon)} .fh button{color:var(--marge)}
+label{display:block;margin-bottom:16px}
+.et{font-family:var(--mono);font-size:10px;color:var(--marge);letter-spacing:.08em}
+.saisie-champ{width:100%;margin-top:6px;padding:10px 12px;background:var(--fond);
+  border:1px solid var(--ligne);border-radius:4px;font-size:15px}
+textarea.saisie-champ{resize:vertical;line-height:1.5;font-size:14px;color:var(--texteF)}
+.opts{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.opts button{padding:6px 10px;border-radius:4px;border:1px solid var(--ligne);
+  background:var(--fond);color:var(--marge);font-family:var(--mono);font-size:11px}
+.opts button.on{border-color:var(--tampon);background:var(--tamponF);color:var(--texte)}
+.opts.eq button{flex:1}
+.valider{width:100%;padding:12px;background:var(--tampon);color:var(--fond);
+  border-radius:6px;font-size:15px;font-weight:600;margin-top:4px}
+.lien{display:block;margin-top:6px;padding:10px 12px;background:var(--fond);
+  border:1px solid var(--ligne);border-radius:4px;font-family:var(--mono);font-size:12px;
+  color:var(--tampon);text-decoration:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note{font-family:var(--mono);font-size:10px;color:var(--marge);line-height:1.5;margin-top:4px}
+.bandeau{margin-bottom:16px;padding:8px 12px;border:1px solid var(--alerte);border-radius:4px;
+  font-family:var(--mono);font-size:10.5px;line-height:1.6;color:var(--alerte)}
+</style>
+</head>
+<body>
+<header>
+  <div class="titre-bar"><span class="logo">LA MARGE</span><span class="etat" id="etat"></span></div>
+  <div class="brief">
+    <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px">
+      <span class="j" id="jour"></span>
+      <button class="act" id="rebrief">↻ BRIEFING</button>
+    </div>
+    <p id="tete"></p>
+    <p class="derive" id="derive" hidden></p>
+  </div>
+</header>
+<nav id="nav"></nav>
+<main id="main"></main>
+<div id="capture">
+  <div id="chips" class="barre" hidden></div>
+  <div class="zone">
+    <textarea id="saisie" rows="1" placeholder="Note tout. Touche un dossier pour classer."></textarea>
+    <div class="aide" id="aide"></div>
+  </div>
+</div>
+<div id="modale"></div>
+<script>
+"use strict";
+
+const DOSSIERS = ["Famille","Maison","Moi","Administratif","Thèse","Missions","Éditorial","Skills","CCA-F","Veille"];
+const SOUS = { Maison: ["Bricolage","Achats","Ménage"] };
+
+const CONTEXTE_DEF = `QUI
+Gillan Saleh, Paris. Une vie entière, pas un métier : le travail en est une part, pas le centre. Parent solo.
+Côté professionnel : juriste-consultante, compliance et régulation (sanctions internationales, LCB-FT, IEF, droit financier), ingénierie IA pour juristes, gouvernance des sociétés. Doctorat en cours à Paris-Panthéon-Assas, direction du Professeur Stéphane Torck, sur la gouvernance comparée entre l'appareil exécutif de l'État et les sociétés commerciales cotées.
+
+CE QUE TU REÇOIS
+Tout, sans hiérarchie. Un placard à nettoyer, une idée de thèse, une question sur les enfants, une facture, un lien, une envie. Une tâche ménagère mérite exactement le même tri sérieux qu'une échéance professionnelle. Ne privilégie jamais le professionnel par défaut : c'est le biais à combattre.
+
+DOSSIERS
+Famille : enfants, école, santé, activités, garde, vacances.
+Maison : intendance du foyer. Sous-dossiers obligatoires : Bricolage, Achats, Ménage.
+Moi : santé, sport, temps libre, vie sociale, rendez-vous personnels.
+Administratif : impôts, papiers, banque, assurances, démarches.
+Thèse : recherche doctorale, direction Torck.
+Missions : travail juridique, clients, livrables.
+Éditorial : LinkedIn, TikTok, gillansaleh.fr.
+Skills : skills Claude, stack MCP.
+CCA-F : préparation de la certification.
+Veille : capté sans destination tranchée.
+
+ARBITRAGE
+Ne tranche pas à la place de Gillan. Si la saisie ne dit pas où elle va, verse en Veille, priorité basse. Une entrée mal classée coûte plus cher qu'une entrée en attente.
+L'axe de travail de Gillan est le parallèle entre gouvernance publique et gouvernance des sociétés cotées. Une information sur ce terrain relève indifféremment de Thèse, d'Éditorial ou de Veille sans que la saisie le dise : dans ce cas, Veille.
+
+DURÉES ET ÉCHÉANCES
+N'invente ni durée ni échéance. La plupart des choses de la vie courante n'en ont aucune : un placard à nettoyer n'a pas de date, il attend. Laisse null sans scrupule.`;
+
+/* ---------- état ---------- */
+const CLE = "marge.registre.v1";
+let S = { entrees: [], compteur: 0, cle: "", modele: "claude-sonnet-5", contexte: CONTEXTE_DEF };
+let vue = "jour", saisie = "", attenteSous = null, ouvert = null, brief = null, occupe = false;
+
+function charger() {
+  try {
+    const b = localStorage.getItem(CLE);
+    if (b) S = Object.assign(S, JSON.parse(b));
+    etat(true);
+  } catch (e) { etat(false, e.message); }
+}
+function sauver() {
+  try { localStorage.setItem(CLE, JSON.stringify(S)); etat(true); }
+  catch (e) { etat(false, e.message); }
+}
+function etat(ok, msg) {
+  const el = document.getElementById("etat");
+  el.className = "etat" + (ok ? "" : " ko");
+  el.textContent = ok ? "● registre sauvegardé" : "⚠ NON SAUVEGARDÉ — " + msg;
+}
+
+/* ---------- dates ---------- */
+const iso = d => new Date(d.getTime() - d.getTimezoneOffset()*60000).toISOString().slice(0,10);
+const auj = () => iso(new Date());
+const plus = n => { const d = new Date(); d.setDate(d.getDate()+n); return iso(d); };
+const ecart = s => Math.round((new Date(s+"T00:00:00") - new Date(auj()+"T00:00:00"))/86400000);
+const JOURS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
+function libelle(s) {
+  if (!s) return "—";
+  const e = ecart(s);
+  if (e === 0) return "auj."; if (e === 1) return "demain"; if (e < 0) return "J+" + (-e);
+  if (e < 7) return new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{weekday:"short"});
+  return new Date(s+"T00:00:00").toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit"});
+}
+const dateLongue = () => new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"});
+const cote = n => "№" + String(n).padStart(4,"0");
+
+function lireDate(t) {
+  let date = null, reste = t;
+  const prendre = (re, calc) => {
+    if (date) return;
+    const m = reste.match(re); if (!m) return;
+    const d = calc(m); if (!d) return;
+    date = d;
+    reste = (reste.slice(0,m.index) + " " + reste.slice(m.index+m[0].length)).replace(/\s{2,}/g," ").trim();
+  };
+  prendre(/\b(aujourd'hui|auj|ce soir|ce matin)\b/i, () => auj());
+  prendre(/\bapr[èe]s-demain\b/i, () => plus(2));
+  prendre(/\bdemain\b/i, () => plus(1));
+  prendre(/\bdans\s+(\d+)\s*(jours?|semaines?|mois)\b/i, m => {
+    const n = +m[1], u = m[2].toLowerCase();
+    return plus(u.startsWith("sem") ? n*7 : u.startsWith("mois") ? n*30 : n);
+  });
+  prendre(new RegExp("\\b(?:ce\\s+)?(" + JOURS.join("|") + ")\\b","i"), m => {
+    const c = JOURS.indexOf(m[1].toLowerCase()); if (c < 0) return null;
+    let n = (c - new Date().getDay() + 7) % 7; if (n === 0) n = 7;
+    return plus(n);
+  });
+  prendre(/\b(\d{1,2})[\/.](\d{1,2})(?:[\/.](\d{2,4}))?\b/, m => {
+    const j = +m[1], mo = +m[2];
+    if (j < 1 || j > 31 || mo < 1 || mo > 12) return null;
+    let a = m[3] ? +m[3] : new Date().getFullYear(); if (a < 100) a += 2000;
+    const f = y => y + "-" + String(mo).padStart(2,"0") + "-" + String(j).padStart(2,"0");
+    return (!m[3] && ecart(f(a)) < 0) ? f(a+1) : f(a);
+  });
+  return { date, reste };
+}
+const RE_URL = /https?:\/\/[^\s<>"']+/g;
+const hote = u => { try { return new URL(u).hostname.replace(/^www\./,""); } catch { return u.slice(0,24); } };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+/* ---------- appel modèle ---------- */
+async function appel(prompt) {
+  if (!S.cle) throw new Error("Aucune clé API. Réglages → clé.");
+  const r = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "x-api-key": S.cle,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true"
+    },
+    body: JSON.stringify({ model: S.modele, max_tokens: 1200, messages: [{role:"user",content:prompt}] })
+  });
+  const d = await r.json();
+  if (!r.ok || d.error) throw new Error((d.error && d.error.message) || ("HTTP " + r.status));
+  const t = (d.content||[]).filter(b => b.type === "text").map(b => b.text).join("\n");
+  return JSON.parse(t.replace(/```json/g,"").replace(/```/g,"").trim());
+}
+
+const pTri = t => S.contexte + `
+
+Date du jour : ` + auj() + ` (` + dateLongue() + `).
+Dossiers : ` + DOSSIERS.join(", ") + `
+
+SAISIE
+"""
+` + t + `
+"""
+
+Tu réponds UNIQUEMENT en JSON, sans préambule ni backticks. Découpe la saisie si elle contient plusieurs items.
+{"items":[{"titre":"","dossier":"","sous":"" ou null,"echeance":"YYYY-MM-DD" ou null,"priorite":"haute|moyenne|basse"}]}
+- titre : verbe à l'infinitif, court, sans ponctuation finale, 80 caractères max. Jamais construit sur une URL.
+- dossier : uniquement dans la liste ci-dessus.
+- sous : obligatoire si dossier = "Maison", null partout ailleurs.
+- N'invente rien. Au moindre doute : null, et dossier "Veille".`;
+
+const pBrief = e => S.contexte + `
+
+Date du jour : ` + auj() + ` (` + dateLongue() + `).
+ENTRÉES OUVERTES
+` + JSON.stringify(e) + `
+
+Ton : sobre, factuel, direct. Tu constates, tu n'encourages pas. Pas d'exclamation, pas de familiarité, pas de conseil de développement personnel. Une juriste te lit.
+Tu réponds UNIQUEMENT en JSON, sans préambule ni backticks.
+{"tete":"une phrase, 120 caractères max : ce qui compte aujourd'hui","derive":"une phrase sur ce qui traîne, avec la durée exacte, ou null"}
+Ne mentionne que des faits présents dans les données.`;
+
+/* ---------- classement ---------- */
+function ajouter(o) {
+  S.compteur += 1;
+  S.entrees.unshift(Object.assign({
+    id: "e" + Date.now() + Math.random().toString(36).slice(2,6),
+    cote: S.compteur, sous: null, echeance: null, priorite: "moyenne",
+    lien: null, cree: new Date().toISOString(), done: false
+  }, o));
+  sauver();
+}
+
+function classer(dossier, sous) {
+  const brut = saisie.trim(); if (!brut) return;
+  if (SOUS[dossier] && !sous) { attenteSous = dossier; rendre(); return; }
+  const lien = (brut.match(RE_URL) || [])[0] || null;
+  const sansUrl = brut.replace(RE_URL,"").trim();
+  const haute = sansUrl.includes("!");
+  const r = lireDate(sansUrl.replace(/!/g,"").trim());
+  let titre = r.reste || (lien ? "Lien — " + hote(lien) : brut);
+  titre = titre.charAt(0).toUpperCase() + titre.slice(1);
+  ajouter({ titre: titre.slice(0,90), dossier, sous: sous || null,
+            echeance: r.date, priorite: haute ? "haute" : "moyenne", lien, brut });
+  saisie = ""; attenteSous = null;
+  document.getElementById("saisie").value = "";
+  document.getElementById("saisie").style.height = "auto";
+  rendre();
+}
+
+async function trierIA() {
+  const brut = saisie.trim(); if (!brut || occupe) return;
+  occupe = true; aide("Tri en cours…"); rendre();
+  const lien = (brut.match(RE_URL) || [])[0] || null;
+  try {
+    const j = await appel(pTri(brut));
+    const items = (j.items || []);
+    if (!items.length) throw new Error("aucun item produit");
+    items.forEach(it => {
+      const d = DOSSIERS.includes(it.dossier) ? it.dossier : "Veille";
+      ajouter({ titre: (it.titre || brut).slice(0,90), dossier: d,
+                sous: SOUS[d] ? (it.sous || null) : null,
+                echeance: it.echeance || null, priorite: it.priorite || "moyenne", lien, brut });
+    });
+    saisie = ""; attenteSous = null;
+    document.getElementById("saisie").value = "";
+    document.getElementById("saisie").style.height = "auto";
+    aide("");
+  } catch (e) {
+    // Jamais de saisie perdue.
+    ajouter({ titre: (lien ? "Lien — " + hote(lien) : brut).slice(0,90),
+              dossier: "Veille", priorite: "basse", lien, brut, nonTrie: true });
+    saisie = "";
+    document.getElementById("saisie").value = "";
+    aide(cote(S.compteur) + " versée en Veille sans tri — " + e.message, true);
+  }
+  occupe = false; rendre();
+}
+
+async function faireBrief() {
+  const src = S.entrees.filter(e => !e.done);
+  if (!src.length || !S.cle || occupe) return;
+  occupe = true;
+  document.getElementById("tete").textContent = "Lecture du dossier…";
+  try {
+    brief = await appel(pBrief(src.map(e => ({
+      titre: e.titre, dossier: e.sous ? e.dossier + "/" + e.sous : e.dossier,
+      echeance: e.echeance, priorite: e.priorite,
+      ouverte_depuis_jours: Math.max(0, -ecart(e.cree.slice(0,10)))
+    }))));
+  } catch (e) { brief = { tete: null, derive: null }; aide("Briefing — " + e.message, true); }
+  occupe = false; rendre();
+}
+
+/* ---------- actions ---------- */
+const trouve = id => S.entrees.find(e => e.id === id);
+function fait(id) { const e = trouve(id); if (e) { e.done = true; sauver(); rendre(); } }
+function aide(t, ko) {
+  const el = document.getElementById("aide");
+  el.className = "aide" + (ko ? " ko" : ""); el.dataset.msg = t || "";
+}
+
+/* ---------- rendu ---------- */
+function ouvertes() { return S.entrees.filter(e => !e.done); }
+function ligne(e, dv) {
+  const retard = e.echeance && ecart(e.echeance) < 0;
+  const meta = [ dv ? (e.sous ? e.dossier + " / " + e.sous : e.dossier) : e.sous,
+                 e.lien ? "↗ " + hote(e.lien) : null,
+                 e.nonTrie ? "non trié" : null ].filter(Boolean);
+  return '<div class="ligne">' +
+    '<div class="rail"><span>' + cote(e.cote) + '</span>' +
+    '<span class="d' + (retard ? " retard" : "") + '">' + (retard ? "⚠ " : "") + libelle(e.echeance) + '</span></div>' +
+    '<button class="corps ' + e.priorite + '" data-ouvrir="' + e.id + '">' +
+    '<div class="t">' + esc(e.titre) + '</div>' +
+    (meta.length ? '<div class="m">' + esc(meta.join("  ·  ")) + '</div>' : '') +
+    '</button><button class="case" data-fait="' + e.id + '" aria-label="Fait"><i></i></button></div>';
+}
+
+function rendre() {
+  const o = ouvertes();
+  const jour = o.filter(e => e.echeance && e.echeance <= auj()).sort((a,b) => a.echeance.localeCompare(b.echeance));
+  const sem = o.filter(e => e.echeance && e.echeance > auj() && e.echeance <= plus(7)).sort((a,b) => a.echeance.localeCompare(b.echeance));
+  const grp = DOSSIERS.map(d => {
+    const it = o.filter(e => e.dossier === d);
+    return { nom: d, items: it, ss: SOUS[d] ? SOUS[d].filter(s => it.some(e => e.sous === s)) : null };
+  }).filter(g => g.items.length);
+
+  document.getElementById("jour").textContent = dateLongue().toUpperCase();
+  document.getElementById("tete").textContent =
+    (brief && brief.tete) ? brief.tete :
+    (o.length ? jour.length + " aujourd'hui · " + o.length + " en cours" : "Rien au dossier.");
+  const dv = document.getElementById("derive");
+  dv.hidden = !(brief && brief.derive);
+  if (brief && brief.derive) dv.textContent = "⚠ " + brief.derive;
+  document.getElementById("rebrief").hidden = !S.cle;
+
+  document.getElementById("nav").innerHTML =
+    [["jour","Aujourd'hui",jour.length],["semaine","Semaine",sem.length],
+     ["dossiers","Dossiers",grp.length],["reglages","Réglages",0]]
+    .map(x => '<button data-vue="' + x[0] + '" class="' + (vue === x[0] ? "on" : "") + '">' + x[1] +
+      (x[2] ? ' <span class="n">' + x[2] + '</span>' : '') + '</button>').join("");
+
+  const m = document.getElementById("main");
+  if (vue === "reglages") m.innerHTML = vueReglages();
+  else if (vue === "jour") m.innerHTML = jour.length ? jour.map(e => ligne(e,true)).join("") : '<div class="vide">Aucune échéance aujourd\'hui.</div>';
+  else if (vue === "semaine") m.innerHTML = sem.length ? sem.map(e => ligne(e,true)).join("") : '<div class="vide">Rien de daté sur sept jours.</div>';
+  else m.innerHTML = grp.length ? grp.map(g =>
+      '<div class="entete">' + g.nom.toUpperCase() + ' <span class="n">' + g.items.length + '</span></div>' +
+      (g.ss ? g.ss.map(s => '<div class="sentete">└ ' + s.toUpperCase() + '</div>' +
+        g.items.filter(e => e.sous === s).map(e => ligne(e,false)).join("")).join("")
+            : g.items.map(e => ligne(e,false)).join(""))
+    ).join("") : '<div class="vide">Aucun dossier ouvert.</div>';
+
+  const ch = document.getElementById("chips");
+  ch.hidden = !saisie.trim() || vue === "reglages";
+  if (!ch.hidden) {
+    const liste = attenteSous ? SOUS[attenteSous] : DOSSIERS;
+    ch.innerHTML =
+      (attenteSous ? '<button data-retour="1">←</button>' : '') +
+      (!attenteSous && S.cle ? '<button class="ia" data-ia="1">' + (occupe ? "···" : "⚡ TRI IA") + '</button>' : '') +
+      liste.map(d => '<button class="' + (attenteSous ? "sous" : "") + '" data-classe="' + esc(d) + '">' + d + '</button>').join("");
+  }
+  const el = document.getElementById("aide");
+  el.textContent = el.dataset.msg ? el.dataset.msg
+    : attenteSous ? attenteSous.toUpperCase() + " — choisis le sous-dossier"
+    : "demain · vendredi · 15/09 · dans 3 jours   —   ! = priorité haute";
+  document.getElementById("modale").innerHTML = ouvert ? fiche(trouve(ouvert)) : "";
+}
+
+/* ---------- fiche ---------- */
+function fiche(e) {
+  if (!e) return "";
+  return '<div class="voile" data-fermer="1"><div class="feuille" data-stop="1">' +
+  '<div class="fh"><span class="c">' + cote(e.cote) + '</span><button data-suppr="' + e.id + '">SUPPRIMER</button></div>' +
+  (e.nonTrie ? '<div class="bandeau">⚠ Versée sans tri. Le texte est intact, le classement reste à faire.</div>' : '') +
+  '<label><span class="et">INTITULÉ</span><input class="saisie-champ" data-champ="titre" value="' + esc(e.titre) + '"></label>' +
+  '<div style="margin-bottom:16px"><span class="et">DOSSIER</span><div class="opts">' +
+    DOSSIERS.map(d => '<button data-set-dossier="' + esc(d) + '" class="' + (e.dossier === d ? "on" : "") + '">' + d + '</button>').join("") +
+  '</div></div>' +
+  (SOUS[e.dossier] ? '<div style="margin-bottom:16px"><span class="et">SOUS-DOSSIER</span><div class="opts eq">' +
+    SOUS[e.dossier].map(s => '<button data-set-sous="' + esc(s) + '" class="' + (e.sous === s ? "on" : "") + '">' + s + '</button>').join("") +
+  '</div></div>' : '') +
+  '<label><span class="et">ÉCHÉANCE</span><input class="saisie-champ" data-champ="echeance" placeholder="AAAA-MM-JJ" value="' + esc(e.echeance || "") + '"></label>' +
+  '<div class="opts eq" style="margin-top:-10px;margin-bottom:16px">' +
+    [["Auj.",0],["Demain",1],["+3j",3],["+7j",7],["—",null]]
+      .map(x => '<button data-date="' + x[1] + '">' + x[0] + '</button>').join("") +
+  '</div>' +
+  '<div style="margin-bottom:16px"><span class="et">PRIORITÉ</span><div class="opts eq">' +
+    ["haute","moyenne","basse"].map(p => '<button data-set-prio="' + p + '" class="' + (e.priorite === p ? "on" : "") + '">' + p + '</button>').join("") +
+  '</div></div>' +
+  (e.lien ? '<div style="margin-bottom:16px"><span class="et">LIEN</span>' +
+    '<a class="lien" href="' + esc(e.lien) + '" target="_blank" rel="noopener">↗ ' + esc(e.lien) + '</a></div>' : '') +
+  '<label><span class="et">SAISIE D\'ORIGINE — ARCHIVE</span>' +
+    '<textarea class="saisie-champ" rows="3" data-champ="brut">' + esc(e.brut || "") + '</textarea>' +
+    '<span class="note">Conservée telle quelle. Colle ici le texte que tu veux garder.</span></label>' +
+  '<button class="valider" data-fermer="1">Fermer</button></div></div>';
+}
+
+function vueReglages() {
+  return '<div style="padding:20px">' +
+  '<label><span class="et">CLÉ API ANTHROPIC</span>' +
+    '<input class="saisie-champ" type="password" data-reglage="cle" placeholder="sk-ant-…" value="' + esc(S.cle) + '">' +
+    '<span class="note">console.anthropic.com → API keys. Stockée sur ce téléphone uniquement, jamais ailleurs. Sans clé, l\'appli marche : tu classes avec les dossiers.</span></label>' +
+  '<label><span class="et">MODÈLE</span>' +
+    '<input class="saisie-champ" data-reglage="modele" value="' + esc(S.modele) + '">' +
+    '<span class="note">claude-sonnet-5 · claude-haiku-4-5-20251001 · claude-opus-4-8</span></label>' +
+  '<div style="margin-bottom:16px"><button class="valider" data-test="1" style="background:none;border:1px solid var(--tampon);color:var(--tampon)">TESTER LA CLÉ</button>' +
+    '<div class="note" id="res-test"></div></div>' +
+  '<label><span class="et">CONTEXTE — lu à chaque tri et briefing</span>' +
+    '<textarea class="saisie-champ" rows="12" data-reglage="contexte" style="font-family:var(--mono);font-size:11.5px">' + esc(S.contexte) + '</textarea></label>' +
+  '<div class="note" style="border-top:1px solid var(--ligne);padding-top:16px">' +
+    S.entrees.length + ' entrée(s) au registre · ' + S.entrees.filter(e => e.done).length + ' close(s)<br>' +
+    'Dernière cote : ' + cote(S.compteur) + '</div>' +
+  '<div style="margin-top:16px;display:flex;gap:8px">' +
+    '<button class="valider" data-export="1" style="background:none;border:1px solid var(--ligne);color:var(--texteF)">EXPORTER (JSON)</button>' +
+  '</div></div>';
+}
+
+/* ---------- événements ---------- */
+const $ = document;
+const sz = $.getElementById("saisie");
+
+sz.addEventListener("input", () => {
+  saisie = sz.value; attenteSous = null; aide("");
+  sz.style.height = "auto"; sz.style.height = Math.min(sz.scrollHeight,120) + "px";
+  rendre();
+});
+
+$.addEventListener("click", ev => {
+  const t = ev.target.closest("[data-vue],[data-classe],[data-retour],[data-ia],[data-ouvrir],[data-fait],[data-suppr],[data-fermer],[data-stop],[data-set-dossier],[data-set-sous],[data-set-prio],[data-date],[data-test],[data-export]");
+  if (!t) return;
+  const d = t.dataset;
+
+  if (d.stop !== undefined) { ev.stopPropagation(); return; }
+  if (d.vue) { vue = d.vue; rendre(); }
+  else if (d.classe) classer(d.classe, attenteSous ? d.classe : null);
+  else if (d.retour !== undefined) { attenteSous = null; rendre(); }
+  else if (d.ia !== undefined) trierIA();
+  else if (d.ouvrir) { ouvert = d.ouvrir; rendre(); }
+  else if (d.fait) fait(d.fait);
+  else if (d.suppr) { S.entrees = S.entrees.filter(e => e.id !== d.suppr); ouvert = null; sauver(); rendre(); }
+  else if (d.fermer !== undefined) { ouvert = null; rendre(); }
+  else if (d.setDossier) { const e = trouve(ouvert); e.dossier = d.setDossier; if (!SOUS[e.dossier]) e.sous = null; sauver(); rendre(); }
+  else if (d.setSous) { trouve(ouvert).sous = d.setSous; sauver(); rendre(); }
+  else if (d.setPrio) { trouve(ouvert).priorite = d.setPrio; sauver(); rendre(); }
+  else if (d.date !== undefined) { trouve(ouvert).echeance = d.date === "null" ? null : plus(+d.date); sauver(); rendre(); }
+  else if (d.test !== undefined) tester();
+  else if (d.export !== undefined) exporter();
+});
+
+$.addEventListener("change", ev => {
+  const d = ev.target.dataset;
+  if (d.champ && ouvert) { const e = trouve(ouvert); e[d.champ] = ev.target.value || null; sauver(); }
+  else if (d.reglage) { S[d.reglage] = ev.target.value; sauver(); if (d.reglage === "cle") rendre(); }
+});
+
+$.getElementById("rebrief").addEventListener("click", faireBrief);
+
+async function tester() {
+  const el = $.getElementById("res-test");
+  el.textContent = "Test…";
+  try { await appel('Réponds uniquement ceci : {"items":[]}'); el.textContent = "✓ Clé valide, modèle joignable."; }
+  catch (e) { el.textContent = "✗ " + e.message; }
+}
+
+function exporter() {
+  const b = new Blob([JSON.stringify(S.entrees,null,2)], {type:"application/json"});
+  const a = $.createElement("a");
+  a.href = URL.createObjectURL(b);
+  a.download = "marge-" + auj() + ".json";
+  a.click();
+}
+
+/* ---------- démarrage ---------- */
+charger();
+rendre();
+if (S.cle && S.entrees.some(e => !e.done)) faireBrief();
+</script></body></html>
